@@ -17,22 +17,18 @@ const constants = require('./constants');
 require('dotenv').config();
 
 const {
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_HOSTNAME,
-    DB_PORT,
-    DB_DB_NAME
+    POSTGRES_USER,
+    POSTGRES_PASSWORD,
+    POSTGRES_HOST,
+    POSTGRES_PORT,
+    POSTGRES_DB,
+    POSTGRES_URI
 } = process.env;
 
+const URI = `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`;
 const db = knex({
     client: 'pg',
-    connection: {
-        host: DB_HOSTNAME,
-        user: DB_USERNAME,
-        port: DB_PORT,
-        password: DB_PASSWORD,
-        database: DB_DB_NAME
-    }
+    connection: POSTGRES_URI || URI
 });
 
 const app = express();
@@ -41,7 +37,7 @@ app.use(cors());
 app.use(compression());
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => res.send(db.users));
+app.get('/', (req, res) => db.select('*').from('users').then(users => res.send(JSON.stringify(users))));
 app.post('/signin', signin.signinAuthentication(db, bcrypt));
 app.post('/register', (req, res) => register.handleRegister(req, res, db, bcrypt));
 app.get('/profile/:id', auth.requireAuth, (req, res) => profile.handleProfileGet(req, res, db));

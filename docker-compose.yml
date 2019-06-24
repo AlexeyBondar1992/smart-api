@@ -3,39 +3,34 @@ version: '3.6'
 services:
 
   # Backend API
-  smart-brain-api:
+  smart-api:
     container_name: backend
-    #build: ./
-    image: node:11
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: npm install && nmp start
-    working_dir: /usr/src/smart-brain-api
-    #environment:
-    #  POSTGRES_URI: postgres://sally:secret@postgres:5432/smart-brain-docker
-    #  REDIS_URI: redis://redis:6379
-    #links:
-    #  - postgres
-    #  - redis
+    #image: node:11
+    build: ./
+    command: bash -c "npm install && npm start"
+    working_dir: /usr/src/smartApi
+    environment:
+      POSTGRES_URI: postgres://alex:superPassword@postgres:5432/smartDocker
+      REDIS_URI: redis://redis:6379
     ports:
       - "3000:3000"
     volumes:
-      - ./:usr/src/smart-brain-api
+      - ./:/usr/src/smartApi
 
   # Postgres
-  #postgres:
-  #  environment:
-  #    POSTGRES_USER: sally
-  #    POSTGRES_PASSWORD: secret
-  #    POSTGRES_DB: smart-brain-docker
-  #    POSTGRES_HOST: postgres
-  #  build: ./postgres
-  #  ports:
-  #    - "5432:5432"
+  postgres:
+    container_name: DB
+    build: ./postgres
+    environment:
+      POSTGRES_USER: alex
+      POSTGRES_PASSWORD: superPassword
+      POSTGRES_DB: smartDocker
+      POSTGRES_HOST: postgres
+    ports:
+      - "5555:5432"
 
-  #Redis
-  #redis:
-  #  image: redis
-  #  ports:
-  #    - "6379:6379"
+  # Redis
+  redis:
+    image: redis
+    ports:
+      - "6399:6379"

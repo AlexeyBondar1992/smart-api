@@ -1,6 +1,6 @@
 FROM node:11
 
-WORKDIR /usr/src/smart-brain-api
+WORKDIR /usr/src/smartApi
 
 COPY ./ ./
 
