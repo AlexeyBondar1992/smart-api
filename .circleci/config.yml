@@ -21,13 +21,12 @@ jobs:
       - run:
           name: build front
           command:
-            ls &&
             cd ~/my-app/front && ls &&
             npm install && npm run build
       - run:
           name: Move build to backend repository
           command:
-            ls &&
+            rm -r ~/my-app/back/build &&
             mv ~/my-app/front/build ~/my-app/back &&
             cd ~/my-app/back &&
             git add ~/my-app/back/build
