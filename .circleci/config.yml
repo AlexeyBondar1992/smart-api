@@ -1,0 +1,43 @@
+version: 2
+defaults: &defaults
+  working_directory: ~/my-app/back
+  docker:
+    - image: circleci/node:10.16.0
+jobs:
+  add_front_part:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/my-app/back
+      - add_ssh_keys:
+          fingerprints:
+            - "31:b0:29:dd:4a:62:52:30:75:54:4f:ca:70:fe:fe:1c"
+      - run:
+          name: Clone frontend
+          command: >-
+            GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa_31b029dd4a62523075544fca70fefe1c'
+            git clone git@github.com:AlexeyBondar1992/smart-front.git ~/my-app/front
+      - run:
+          name: build front
+          command:
+            ls &&
+            cd ~/my-app/front && ls &&
+            npm install && npm run build
+      - run:
+          name: Move build to backend repository
+          command:
+            ls &&
+            mv ~/my-app/front/build ~/my-app/back &&
+            cd ~/my-app/back &&
+            git add ~/my-app/back/build
+      - run:
+          name: Deploy front
+          command: git config --global user.email "metallhead92@mail.ru" &&
+            git config --global user.name "AlexeyBondar1992" &&
+            git commit -m "build" && git push
+workflows:
+  version: 2
+  add_front_build:
+    jobs:
+      - add_front_part

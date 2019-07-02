@@ -35,9 +35,9 @@ const app = express();
 
 app.use(cors());
 app.use(compression());
+app.use(express.static('build'));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => db.select('*').from('users').then(users => res.send(JSON.stringify(users))));
 app.post('/signin', signin.signinAuthentication(db, bcrypt));
 app.post('/register', (req, res) => register.handleRegister(req, res, db, bcrypt));
 app.get('/profile/:id', auth.requireAuth, (req, res) => profile.handleProfileGet(req, res, db));
