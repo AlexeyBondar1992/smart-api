@@ -31,8 +31,9 @@ jobs:
             cd ~/my-app/back &&
             git add ~/my-app/back/build
       - run:
-          name: Deploy front
-          command: git config --global user.email "metallhead92@mail.ru" &&
+          name: Push front to repo
+          command: git status --untracked-files=no --porcelain &&
+            git config --global user.email "metallhead92@mail.ru" &&
             git config --global user.name "AlexeyBondar1992" &&
             git commit -m "build" && git push
 workflows:
