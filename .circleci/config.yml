@@ -32,10 +32,9 @@ jobs:
             git add ~/my-app/back/build
       - run:
           name: Push front to repo
-          command: git status --untracked-files=no --porcelain &&
-            git config --global user.email "metallhead92@mail.ru" &&
+          command: git config --global user.email "metallhead92@mail.ru" &&
             git config --global user.name "AlexeyBondar1992" &&
-            git commit -m "build" && git push
+            git diff --quiet && git diff --staged --quiet || git commit -am "build" && git push
 workflows:
   version: 2
   add_front_build:
