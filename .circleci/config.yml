@@ -36,7 +36,8 @@ jobs:
             git config --global user.name "AlexeyBondar1992" &&
             git diff --quiet && git diff --staged --quiet || git commit -am "build" && git push
   deploy:
-    machine: true
+    machine:
+      image: circleci/classic:201808-01
     working_directory: ~/dockerised-app
     steps:
       - checkout
