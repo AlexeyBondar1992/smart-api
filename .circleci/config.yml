@@ -59,4 +59,4 @@ workflows:
       - add_front_part
       - deploy:
           requires:
-            - add_front_build
+            - add_front_part
