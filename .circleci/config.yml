@@ -35,8 +35,28 @@ jobs:
           command: git config --global user.email "metallhead92@mail.ru" &&
             git config --global user.name "AlexeyBondar1992" &&
             git diff --quiet && git diff --staged --quiet || git commit -am "build" && git push
+  deploy:
+    machine: true
+    working_directory: ~/dockerised-app
+    steps:
+      - chechout
+      - run:
+          name: install dependencies
+          command: npm install
+      - run:
+          name: docker build
+          command: docker build -t my-app-container .
+      - run:
+          name: deploy to Heroku
+          command: |
+            docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
+            docker tag my-app-container registry.heroku.com/$HEROKU_APP_NAME/web
+            docker push registry.heroku.com/$HEROKU_APP_NAME/web
 workflows:
   version: 2
   add_front_build:
     jobs:
       - add_front_part
+      - deploy:
+          requires:
+            - add_front_build
