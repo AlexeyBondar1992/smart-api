@@ -50,7 +50,7 @@ jobs:
           name: deploy to Heroku
           command: |
             docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
-            docker build -t registry.heroku.com/${YOUR_APP_NAME}/web .
+            docker build -t registry.heroku.com/$HEROKU_APP_NAME/web .
             docker push registry.heroku.com/$HEROKU_APP_NAME/web
 workflows:
   version: 2
