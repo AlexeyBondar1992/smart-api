@@ -39,7 +39,7 @@ jobs:
     machine: true
     working_directory: ~/dockerised-app
     steps:
-      - chechout
+      - checkout
       - run:
           name: install dependencies
           command: npm install
