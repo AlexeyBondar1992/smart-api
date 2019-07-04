@@ -44,13 +44,10 @@ jobs:
           name: install dependencies
           command: npm install
       - run:
-          name: docker build
-          command: docker build -t my-app-container .
-      - run:
           name: deploy to Heroku
           command: |
             docker login --username=$HEROKU_LOGIN --password=$HEROKU_API_KEY registry.heroku.com
-            docker build -t registry.heroku.com/$HEROKU_APP_NAME/web .
+            docker-compose --build registry.heroku.com/$HEROKU_APP_NAME/web .
             docker push registry.heroku.com/$HEROKU_APP_NAME/web
 workflows:
   version: 2
