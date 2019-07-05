@@ -5,8 +5,6 @@ const redisClient = require('redis').createClient(process.env.REDIS_URI);
 const signinAuthentication = (db, bcrypt) => (req, res) => {
     const { authorization } = req.headers;
 
-    console.log('signIn was fetched', authorization);
-
     const sessionPromise = authorization ?
         getAuthTokenId(authorization) :
         handleSignin(db, bcrypt, req)
