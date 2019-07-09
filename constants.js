@@ -16,9 +16,26 @@ const errorMessages = {
 };
 const defaultPort = 3000;
 const serverPort = process.env.PORT || defaultPort;
+const dataBases = {
+   users: {
+       root: 'users',
+       id: 'id',
+       email: 'email',
+       entries: 'entries',
+       name: 'name',
+       joined: 'joined'
+   },
+   login: {
+       root: 'login',
+       email: 'email',
+       hash: 'hash',
+       id: 'id'
+   }
+};
 
 module.exports = {
     statuses,
     serverPort,
-    errorMessages
+    errorMessages,
+    dataBases
 };

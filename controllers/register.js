@@ -1,4 +1,4 @@
-const { statuses: { badRequest }, errorMessages } = require('../constants');
+const { statuses: { badRequest }, errorMessages, dataBases } = require('../constants');
 
 const handleRegister = (req, res, db, bcrypt) => {
     const {email, name, password} = req.body;
@@ -14,19 +14,17 @@ const handleRegister = (req, res, db, bcrypt) => {
             hash: hash,
             email: email
         })
-            .into('login')
-            .returning('email')
+            .into(dataBases.login.root)
+            .returning(dataBases.login.email)
             .then(loginEmail => {
-                return trx('users')
+                return trx(dataBases.users.root)
                     .returning('*')
                     .insert({
                         email: loginEmail[0],
                         name: name,
                         joined: new Date()
                     })
-                    .then(user => {
-                        res.json(user[0]);
-                    });
+                    .then(user => res.json(user[0]));
             })
             .then(trx.commit)
             .catch(trx.rollback);
@@ -34,8 +32,4 @@ const handleRegister = (req, res, db, bcrypt) => {
         .catch(() => res.status(badRequest).json(errorMessages.registration));
 };
 
-module.exports = {
-    handleRegister: handleRegister
-};
-
-
+module.exports = { handleRegister };

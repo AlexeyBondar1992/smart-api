@@ -1,4 +1,4 @@
-const { statuses: { badRequest }, errorMessages } = require('../constants');
+const { statuses: { badRequest }, errorMessages, dataBases } = require('../constants');
 const Clarifai = require('clarifai');
 const { CLARIFY_KEY } = process.env;
 
@@ -16,9 +16,9 @@ const handleApiCall = (req, res) => {
 const handleImage = (req, res, db) => {
     const { id } = req.body;
 
-    db('users').where('id', '=', id)
-        .increment('entries', 1)
-        .returning('entries')
+    db(dataBases.users.root).where(dataBases.users.id, '=', id)
+        .increment(dataBases.users.entries, 1)
+        .returning(dataBases.users.entries)
         .then(entries => res.json(entries[0]))
         .catch(() => res.status(badRequest).json(errorMessages.entries));
 };

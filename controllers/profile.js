@@ -1,20 +1,23 @@
-const { statuses: { badRequest }, errorMessages } = require('../constants');
+const { statuses: { badRequest }, errorMessages, dataBases } = require('../constants');
 
 const handleProfileGet = (req, res, db) => {
     const { id } = req.params;
-    db.select('*').from('users').where({ id })
-        .then(user => user.length ? res.json(user[0]) : res.status(badRequest).json(errorMessages.notFound))
-        .catch(() => res.status(badRequest).json(errorMessages.user));
+    const respondError = message => res.status(badRequest).json(message);
+
+    db.select('*').from(dataBases.users.root).where({ id })
+        .then(user => user.length ? res.json(user[0]) : respondError(errorMessages.notFound))
+        .catch(() => respondError(errorMessages.user));
 };
 const handleProfileUpdate =  (req, res, db) => {
     const { id } = req.params;
     const { name, age, pet } = req.body.formInput;
+    const respondError = () => res.status(badRequest).json(errorMessages.update);
 
-    db('users')
+    db(dataBases.users.root)
         .where({ id })
         .update({ name })
-        .then(resp => resp ? res.json('success') : res.status(badRequest).json(errorMessages.update))
-        .catch(() => res.status(badRequest).json(errorMessages.update));
+        .then(resp => resp ? res.json('success') : respondError())
+        .catch(() => respondError());
 };
 
 module.exports = {

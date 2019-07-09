@@ -1,10 +1,9 @@
-const { statuses: { badRequest }, errorMessages } = require('../constants');
+const { statuses: { badRequest }, errorMessages, dataBases } = require('../constants');
+const { redisClient } = require('../dataBases/redis');
 const jwt = require('jsonwebtoken');
-const redisClient = require('redis').createClient(process.env.REDIS_URI);
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
     const { authorization } = req.headers;
-
     const sessionPromise = authorization ?
         getAuthTokenId(authorization) :
         handleSignin(db, bcrypt, req)
@@ -29,18 +28,21 @@ function getAuthTokenId (authorization) {
 }
 
 function handleSignin (db, bcrypt, req) {
-    const {email, password} = req.body;
+    const { email, password } = req.body;
+    const dbEmail = dataBases.login.email;
+
     if (!email || !password) {
         return Promise.reject(errorMessages.submission);
     }
 
-    return db.select('email', 'hash').from('login')
-        .where('email', '=', email)
+    return db.select(dbEmail, dataBases.login.hash).from(dataBases.login.root)
+        .where(dbEmail, '=', email)
         .then(data => {
             const isValid = bcrypt.compareSync(password, data[0].hash);
 
             if (isValid) {
-                return db.select('*').from('users').where('email', '=', email)
+                return db.select('*').from(dataBases.users.root)
+                    .where(dataBases.users.email, '=', email)
                     .then(user => user[0])
                     .catch(() => Promise.reject(errorMessages.getUser));
             } else {
@@ -69,7 +71,4 @@ function setToken (key, value) {
     return Promise.resolve(redisClient.set(key, value));
 }
 
-module.exports = {
-    signinAuthentication,
-    redisClient
-};
+module.exports = { signinAuthentication };

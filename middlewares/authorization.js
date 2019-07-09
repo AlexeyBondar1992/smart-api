@@ -1,22 +1,21 @@
 const { statuses: { notAuthorized }, errorMessages } = require('../constants');
-const { redisClient } = require('../controllers/signin');
+const { redisClient } = require('../dataBases/redis');
 
 const requireAuth = (req, res, next) => {
     const { authorization } = req.headers;
+    const errorResponse = () => res.status(notAuthorized).json(errorMessages.unauthorized);
 
     if (!authorization) {
-        return res.status(notAuthorized).json(errorMessages.unauthorized);
+        return errorResponse();
     }
 
     return redisClient.get(authorization, (err, reply) => {
         if (err || !reply) {
-            return res.status(notAuthorized).json(errorMessages.unauthorized);
+            return errorResponse();
         }
 
         return next();
     });
 };
 
-module.exports = {
-    requireAuth
-};
+module.exports = { requireAuth };
